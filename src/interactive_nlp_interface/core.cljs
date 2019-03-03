@@ -1,15 +1,23 @@
 (ns interactive-nlp-interface.core
     (:require
-      [reagent.core :as r]))
+      [reagent.core :as r]
+      [cljs-http.client :as http]
+      [cljs.core.async :refer [<! go]]))
 
-(def submitted-text (r/atom ""))
-(def relations (r/atom [{:subject "subject"
-                         :relation "relation"
-                         :object "object"},
-                         {:subject "subject"
-                         :relation "relation"
-                         :object "object"}]))
+
+(def relations (r/atom []))
+
 (def next-question (r/atom "the-next-question"))
+
+(def meaning-extractor-url "http://localhost:3000/api/")
+
+(def get-relations-path (str meaning-extractor-url "get-relations"))
+
+(defn update-relations [text]
+  (go (let [response (<! (http/post get-relations-path
+                           {:json-params {:text text}
+                            :with-credentials? false}))]
+        (#(reset! relations (:body response))))))
 
 (defn text-input [current-text]
   [:input {:type "text"
@@ -19,10 +27,8 @@
 (defn submit-text [current-text]
   [:input {:type "button" 
            :value "Submit"
-           :on-click #(reset! submitted-text @current-text)}])
+           :on-click (update-relations @current-text)}])
 
-(defn display-submitted []
-  [:div "Submitted: " @submitted-text])
 
 (defn display-relation
     [relation]
@@ -34,6 +40,7 @@
 
 (defn render-relations
     [relations]
+    (str relations)
     [:ul
       (for [dr (display-relations relations)]
         [:li dr])])
@@ -47,7 +54,6 @@
   (let [input-text (r/atom "")]
     (fn []
       [:div
-       [:p "Current Input: " @input-text]
        [:p "Input: " [text-input input-text]]
        [submit-text input-text]])))
 
@@ -55,10 +61,8 @@
   [:div 
     [:h4 "Input"]
     [accept-input]
-    [display-submitted]
     [:h4 "Extracted Relations"]
-    [render-relations [{:subject "I" :relation "like" :object "pizza"},
-                        {:subject "he" :relation "eats" :object "cheese"}]]
+    [render-relations @relations]
     [:h4 "Next Question"]
     [get-next-question @next-question]])
 
