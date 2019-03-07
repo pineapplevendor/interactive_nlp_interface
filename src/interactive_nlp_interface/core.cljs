@@ -4,7 +4,6 @@
       [cljs-http.client :as http]
       [cljs.core.async :refer [<! go]]))
 
-
 (def relations (r/atom []))
 
 (def next-question (r/atom "the-next-question"))
@@ -19,16 +18,15 @@
                             :with-credentials? false}))]
         (#(reset! relations (:body response))))))
 
-(defn text-input [current-text]
+(defn handle-input [current-text new-input]
+  (reset! current-text new-input)
+  (update-relations @current-text)
+  (prn @current-text))
+
+(defn accept-input [current-text]
   [:input {:type "text"
            :value @current-text
-           :on-change #(reset! current-text (-> % .-target .-value))}])
-
-(defn submit-text [current-text]
-  [:input {:type "button" 
-           :value "Submit"
-           :on-click (update-relations @current-text)}])
-
+           :on-change #(handle-input current-text (-> % .-target .-value))}])
 
 (defn display-relation
     [relation]
@@ -42,25 +40,23 @@
     [relations]
     (str relations)
     [:ul
-      (for [dr (display-relations relations)]
-        [:li dr])])
+      (for [r (display-relations relations)]
+        ^{:key r} [:li r])])
 
 (defn get-next-question
     [text]
     [:div text])
-        
 
-(defn accept-input []
+(defn create-input-area []
   (let [input-text (r/atom "")]
     (fn []
       [:div
-       [:p "Input: " [text-input input-text]]
-       [submit-text input-text]])))
+       [:p "Input: " [accept-input input-text]]])))
 
 (defn home-page []
   [:div 
     [:h4 "Input"]
-    [accept-input]
+    [create-input-area]
     [:h4 "Extracted Relations"]
     [render-relations @relations]
     [:h4 "Next Question"]
