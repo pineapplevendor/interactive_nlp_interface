@@ -6,7 +6,7 @@
 
 (def relations (r/atom []))
 
-(def next-question (r/atom ""))
+(def next-question (r/atom "What do you want to eat?"))
 
 (def meaning-extractor-url "http://localhost:3000/api/")
 
