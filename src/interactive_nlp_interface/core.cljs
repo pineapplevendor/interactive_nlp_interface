@@ -24,7 +24,7 @@
   (prn @current-text))
 
 (defn accept-input [current-text]
-  [:input {:type "text"
+  [:textarea {:type "text"
            :value @current-text
            :on-change #(handle-input current-text (-> % .-target .-value))}])
 
@@ -50,8 +50,7 @@
 (defn create-input-area []
   (let [input-text (r/atom "")]
     (fn []
-      [:div
-       [:p "Input: " [accept-input input-text]]])))
+      [:div [accept-input input-text]])))
 
 (defn home-page []
   [:div 
