@@ -6,11 +6,13 @@
 
 (def relations (r/atom []))
 
-(def next-question (r/atom "the-next-question"))
+(def next-question (r/atom ""))
 
 (def meaning-extractor-url "http://localhost:3000/api/")
 
 (def get-relations-path (str meaning-extractor-url "get-relations"))
+
+(def get-next-question-path (str meaning-extractor-url "get-next-question"))
 
 (defn update-relations [text]
   (go (let [response (<! (http/post get-relations-path
@@ -18,9 +20,16 @@
                             :with-credentials? false}))]
         (#(reset! relations (:body response))))))
 
+(defn update-next-question [text]
+  (go (let [response (<! (http/post get-next-question-path
+                           {:json-params {:text text}
+                            :with-credentials? false}))]
+        (#(reset! next-question (:question-text (:body response)))))))
+
 (defn handle-input [current-text new-input]
   (reset! current-text new-input)
   (update-relations @current-text)
+  (update-next-question @current-text)
   (prn @current-text))
 
 (defn accept-input [current-text]
