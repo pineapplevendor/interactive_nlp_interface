@@ -1,8 +1,8 @@
 (ns interactive-nlp-interface.core
-    (:require
-      [reagent.core :as r]
-      [cljs-http.client :as http]
-      [cljs.core.async :refer [<! go]]))
+  (:require
+   [reagent.core :as r]
+   [cljs-http.client :as http]
+   [cljs.core.async :refer [<! go]]))
 
 (def relations (r/atom []))
 
@@ -16,14 +16,14 @@
 
 (defn update-relations [text]
   (go (let [response (<! (http/post get-relations-path
-                           {:json-params {:text text}
-                            :with-credentials? false}))]
+                                    {:json-params {:text text}
+                                     :with-credentials? false}))]
         (#(reset! relations (:body response))))))
 
 (defn update-next-question [text]
   (go (let [response (<! (http/post get-next-question-path
-                           {:json-params {:text text}
-                            :with-credentials? false}))]
+                                    {:json-params {:text text}
+                                     :with-credentials? false}))]
         (#(reset! next-question (:question-text (:body response)))))))
 
 (defn handle-input [current-text new-input]
@@ -34,27 +34,27 @@
 
 (defn accept-input [current-text]
   [:textarea {:type "text"
-           :value @current-text
-           :on-change #(handle-input current-text (-> % .-target .-value))}])
+              :value @current-text
+              :on-change #(handle-input current-text (-> % .-target .-value))}])
 
 (defn display-relation
-    [relation]
-    (str (:subject relation) "->" (:relation relation) "->" (:object relation)))
+  [relation]
+  (str (:subject relation) "->" (:relation relation) "->" (:object relation)))
 
-(defn display-relations 
-    [relations]
-    (map display-relation relations))
+(defn display-relations
+  [relations]
+  (map display-relation relations))
 
 (defn render-relations
-    [relations]
-    (str relations)
-    [:ul
-      (for [r (display-relations relations)]
-        ^{:key r} [:li r])])
+  [relations]
+  (str relations)
+  [:ul
+   (for [r (display-relations relations)]
+     ^{:key r} [:li r])])
 
 (defn get-next-question
-    [text]
-    [:div text])
+  [text]
+  [:div text])
 
 (defn create-input-area []
   (let [input-text (r/atom "")]
@@ -62,13 +62,13 @@
       [:div [accept-input input-text]])))
 
 (defn home-page []
-  [:div 
-    [:h4 "Input"]
-    [create-input-area]
-    [:h4 "Extracted Relations"]
-    [render-relations @relations]
-    [:h4 "Next Question"]
-    [get-next-question @next-question]])
+  [:div
+   [:h4 "Input"]
+   [create-input-area]
+   [:h4 "Extracted Relations"]
+   [render-relations @relations]
+   [:h4 "Next Question"]
+   [get-next-question @next-question]])
 
 ;; -------------------------
 ;; Initialize app

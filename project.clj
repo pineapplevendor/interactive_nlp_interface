@@ -11,6 +11,7 @@
                  [reagent "0.8.1"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
+            [lein-cljfmt "0.6.4"]
             [lein-figwheel "0.5.18"]]
 
   :clean-targets ^{:protect false}
