@@ -7,7 +7,7 @@
   (:import 
    [goog.async Debouncer]))
 
-(def get-relations-path "http://localhost:3000/api/get-relations")
+(def get-relations-path (atom "http://localhost:3000/api/get-relations"))
 
 (defonce extracted-relations (r/atom ()))
 
@@ -32,7 +32,7 @@
   (.-value (sel1 :#user-input)))
 
 (defn update-extracted-relations! []
-  (go (let [response (<! (http/post get-relations-path
+  (go (let [response (<! (http/post @get-relations-path
                                     {:json-params {:text (get-user-input)}
                                      :with-credentials? false}))]
         (reset! extracted-relations (:body response)))))
@@ -50,6 +50,7 @@
 (defn mount-root []
   (set-extracted-relations!))
 
-(defn init! []
+(defn init! [relations-path]
+  (reset! get-relations-path relations-path)
   (mount-root))
 

@@ -5,4 +5,6 @@
 ;;ignore println statements in prod
 (set! *print-fn* (fn [& _]))
 
-(core/init!)
+(def get-relations-path "http://54.83.153.72/api/get-relations")
+
+(core/init! get-relations-path)
