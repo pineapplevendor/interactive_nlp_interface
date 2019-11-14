@@ -7,9 +7,18 @@
   (:import 
    [goog.async Debouncer]))
 
-(def get-relations-path (atom "http://localhost:3000/api/get-relations"))
+(def host (atom "http://localhost:3000"))
+(defn get-relations-path []
+  (str @host "/api/get-relations"))
+(defn get-next-in-experiment-path []
+  (str @host "/api/get-next-sentence-in-experiment/"))
+(defn submit-sentence-path []
+  (str @host "/api/submit-sentence/"))
+
+(def experiment "testing-1")
 
 (defonce extracted-relations (r/atom ()))
+(defonce current-benchmark-sentence (r/atom {}))
 
 (defn display-relation [relation]
   (str (:subject relation) " - " (:relation relation) " - " (:object relation)))
@@ -28,11 +37,17 @@
 (defn set-extracted-relations! []
   (r/render [display-relations] (sel1 :#extracted-information)))
 
+(defn display-original-sentence []
+  [:div (:sentence @current-benchmark-sentence)])
+
+(defn set-original-sentence! []
+  (r/render [display-original-sentence] (sel1 :#original-sentence)))
+
 (defn get-user-input []
   (.-value (sel1 :#user-input)))
 
 (defn update-extracted-relations! []
-  (go (let [response (<! (http/post @get-relations-path
+  (go (let [response (<! (http/post (get-relations-path)
                                     {:json-params {:text (get-user-input)}
                                      :with-credentials? false}))]
         (reset! extracted-relations (:body response)))))
@@ -44,13 +59,40 @@
 
 (dommy/listen! (sel1 :#user-input) :input debounced-update-relations!)
 
+(defn update-current-benchmark-sentence! [experiment-id]
+  (go (let [response (<! (http/get (str (get-next-in-experiment-path) experiment-id)
+                                   {:with-credentials? false}))]
+        (reset! current-benchmark-sentence (:body response)))))
+
+(defn clear-text-area! []
+  (reset! extracted-relations [])
+  (dommy/set-value! (sel1 :#user-input) ""))
+
+(defn prepare-next-sentence! [experiment-id]
+  (clear-text-area!)
+  (update-current-benchmark-sentence! experiment-id))
+
+(defn submit-sentence! [updated-benchmark-sentence experiment-id]
+  (go (<! (http/post (str (submit-sentence-path) experiment-id)
+                                    {:with-credentials? false
+                                     :json-params updated-benchmark-sentence}))
+      (prepare-next-sentence! experiment-id)))
+
+(defn submit-re-written-sentence! []
+  (submit-sentence! (assoc @current-benchmark-sentence :sentence (get-user-input))
+                    experiment))
+
+(dommy/listen! (sel1 :#submit-button) :click submit-re-written-sentence!)
+
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (set-extracted-relations!))
+  (set-extracted-relations!)
+  (set-original-sentence!)
+  (prepare-next-sentence! experiment))
 
-(defn init! [relations-path]
-  (reset! get-relations-path relations-path)
+(defn init! [env-host]
+  (reset! host env-host)
   (mount-root))
 

@@ -8,6 +8,6 @@
 
 (devtools/install!)
 
-(def get-relations-path "http://localhost:3000/api/get-relations")
+(def env-host "http://localhost:3000")
 
-(core/init! get-relations-path)
+(core/init! env-host)

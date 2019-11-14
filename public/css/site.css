@@ -17,6 +17,17 @@ textarea {
   color: #654321;
 }
 
+#original-sentence {
+  width: 80%;
+  margin: auto;
+}
+
+#submit-button {
+  display: block;
+  margin: auto;
+  margin-top: 10px;
+}
+
 .split {
   height: 100%;
   width: 50%;
@@ -29,6 +40,7 @@ textarea {
 }
 
 .left {
+  text-align: center;
   left: 0;
 }
 
