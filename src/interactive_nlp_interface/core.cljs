@@ -8,6 +8,7 @@
    [goog.async Debouncer]))
 
 (def host (atom "http://localhost:3000"))
+
 (defn get-relations-path []
   (str @host "/api/get-relations"))
 (defn get-next-in-experiment-path []
@@ -34,13 +35,13 @@
               [:li (display-sentence-relations sentence-relations)])
             @extracted-relations)])
 
-(defn set-extracted-relations! []
+(defn render-extracted-relations! []
   (r/render [display-relations] (sel1 :#extracted-information)))
 
 (defn display-original-sentence []
   [:div (:sentence @current-benchmark-sentence)])
 
-(defn set-original-sentence! []
+(defn render-original-sentence! []
   (r/render [display-original-sentence] (sel1 :#original-sentence)))
 
 (defn get-user-input []
@@ -88,8 +89,8 @@
 ;; Initialize app
 
 (defn mount-root []
-  (set-extracted-relations!)
-  (set-original-sentence!)
+  (render-extracted-relations!)
+  (render-original-sentence!)
   (prepare-next-sentence! experiment))
 
 (defn init! [env-host]
