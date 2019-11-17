@@ -9,12 +9,15 @@
 
 (def host (atom "http://localhost:3000"))
 
+(defn get-url [host path]
+  (str host path))
+
 (defn get-relations-path []
-  (str @host "/api/get-relations"))
+  (get-url @host "/api/get-relations"))
 (defn get-next-in-experiment-path []
-  (str @host "/api/get-next-sentence-in-experiment/"))
+  (get-url @host "/api/get-next-sentence-in-experiment/"))
 (defn submit-sentence-path []
-  (str @host "/api/submit-sentence/"))
+  (get-url @host "/api/submit-sentence/"))
 
 (def experiment "testing-1")
 
