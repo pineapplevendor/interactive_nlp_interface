@@ -39,6 +39,20 @@ textarea {
   text-align: center;
 }
 
+#original-sentence-container {
+  text-align: center;
+}
+
+.evaluations-split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  overflow-x: hidden;
+  padding-top: 20px;
+  text-align: center;
+}
+
 .left {
   text-align: center;
   left: 0;
@@ -52,6 +66,7 @@ textarea {
 h1, h2, h3 {
   color: #654321;
 }
+
 h1 {
   font-size: 2.5em
 }
