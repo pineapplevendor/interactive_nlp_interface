@@ -143,7 +143,7 @@
   (render-original-sentence!)
   (prepare-next-sentence! experiment)
   (prepare-next-evaluation! experiment)
-  (render-evaluation! experiment))
+  (render-evaluation!))
 
 (defn init! [env-host]
   (reset! host env-host)
