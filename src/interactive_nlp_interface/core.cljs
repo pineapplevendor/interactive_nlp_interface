@@ -129,7 +129,7 @@
 (defn render-evaluation! []
   (r/render [display-original-relations] (sel1 :#original-relations))
   (r/render [display-re-written-relations] (sel1 :#re-written-relations))
-  (r/render [display-sentence] (sel1 :#original-sentence)))
+  (r/render [display-sentence] (sel1 :#original-sentence-evaluate)))
 
 (dommy/listen! (sel1 :#submit-button) :click submit-re-written-sentence!)
 (dommy/listen! (sel1 :#select-updated-button) :click submit-updated-selected!)
@@ -142,7 +142,8 @@
   (render-extracted-relations!)
   (render-original-sentence!)
   (prepare-next-sentence! experiment)
-  (prepare-next-evaluation! experiment))
+  (prepare-next-evaluation! experiment)
+  (render-evaluation! experiment))
 
 (defn init! [env-host]
   (reset! host env-host)
