@@ -39,6 +39,11 @@
                [:li (display-relation relation)])
              (:relations sentence-relations))]])
 
+(defn display-relations-without-sentence [sentence-relations]
+  [:ul (map (fn [relation]
+              [:li (display-relation relation)])
+            (:relations sentence-relations))])
+
 (defn display-relations []
   [:ul (map (fn [sentence-relations] 
               [:li (display-sentence-relations sentence-relations)])
@@ -115,12 +120,12 @@
 
 (defn display-original-relations []
   [:ul (map (fn [sentence-relations] 
-              [:li (display-sentence-relations sentence-relations)])
+              [:li (display-relations-without-sentence sentence-relations)])
             (:original-relations @current-evaluation))])
 
 (defn display-re-written-relations []
   [:ul (map (fn [sentence-relations] 
-              [:li (display-sentence-relations sentence-relations)])
+              [:li (display-relations-without-sentence sentence-relations)])
             (:rewritten-relations @current-evaluation))])
 
 (defn display-sentence []

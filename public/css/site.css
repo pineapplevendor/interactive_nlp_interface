@@ -46,7 +46,7 @@ textarea {
 .evaluations-split {
   height: 100%;
   width: 50%;
-  position: fixed;
+  position: absolute;
   z-index: 1;
   overflow-x: hidden;
   padding-top: 20px;
@@ -55,6 +55,11 @@ textarea {
 
 .left {
   text-align: center;
+  left: 0;
+}
+
+.left-relations {
+  text-align: left;
   left: 0;
 }
 
